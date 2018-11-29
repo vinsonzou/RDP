@@ -1,4 +1,4 @@
-TRUNKDIR=$(shell pwd -P|xargs dirname)
+TRUNKDIR=$(shell pwd -P|xargs dirname| xargs dirname| xargs dirname)
 RDP_DEPS:= $(TRUNKDIR)/deps
 
 LIBNAME = librdp_message

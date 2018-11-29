@@ -17,7 +17,7 @@ namespace fiu {
 
 // Printf debug info to stdout
 #define LOG_INFO(x, args...) \
-    fprintf(stdout, "%s(%s:%d) "x"\n", __func__, __FILE__, __LINE__, ##args)
+    fprintf(stdout, "%s(%s:%d) "#x"\n", __func__, __FILE__, __LINE__, ##args)
 #define LOG_FLUSH() fflush(stdout) 
 
 // Common request packet

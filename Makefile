@@ -1,4 +1,4 @@
-all: 3rd_party comm tools syncer
+all: 3rd_party comm syncer tools
 
 3rd_party:
 	cd build && ./build.sh 3rd_party
@@ -14,6 +14,8 @@ tools:
 syncer:
 	cd build && ./build.sh syncer
 
+prepare:
+	cd build && ./build.sh prepare
 install:
 	cd build && ./build.sh syncer_install
 

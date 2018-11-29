@@ -64,50 +64,88 @@ function GetMySQLVersion() {
 
 case $1 in
 prepare)
-# mysql 的依赖库
-sudo yum -y install python
-sudo yum -y install bison
-sudo yum -y install ncurses-devel
-sudo yum -y install libcurl-devel
+source /etc/os-release
+case $ID in
+debian|ubuntu|devuan)
+    apt-get install -y gcc gcc-c++ make cmake && \
+    apt-get install -y libcurl4-openssl-dev && \
+    apt-get install -y libncurses5-dev bison && \
+    apt-get install -y python && \
+    apt-get install -y libbz2-dev 
+    ;;
+centos|fedora|rhel)
+    yum install -y gcc gcc-c++ make cmake && \
+    yum install -y libcurl-devel && \
+    yum install -y ncurses-devel bison && \
+    yum install -y python
+    ;;
+esac
 
 ;;
 
 3rd_party)
 #make & install boost
-cd $RDP_PROJ/3rd_party/;tar -xf boost_1_59_0.tar.gz;cd -;
-cd $RDP_PROJ/3rd_party/boost_1_59_0;./bootstrap.sh --prefix=$RDP_DEPS/boost;./b2 --with-system --with-thread --with-iostreams --with-regex threading=multi link=shared install;cd -;
+cd $RDP_PROJ/3rd_party/ && tar -xf boost_1_59_0.tar.gz && cd - && \
+cd $RDP_PROJ/3rd_party/boost_1_59_0 && ./bootstrap.sh --prefix=$RDP_DEPS/boost && ./b2 --with-system --with-thread --with-iostreams --with-regex threading=multi link=shared install && cd -;
+if [ $? -ne 0 ];then
+    exit 2
+fi
 
 #make & install jasson
-cd $RDP_PROJ/3rd_party/;tar -xf jansson-2.10.tar.gz;
-cd $RDP_PROJ/3rd_party/jansson-2.10;./configure --prefix=$RDP_DEPS/jansson && make -j$CPU_NUM && make install;cd -;
+cd $RDP_PROJ/3rd_party/ && tar -xf jansson-2.10.tar.gz && \
+cd $RDP_PROJ/3rd_party/jansson-2.10 && ./configure --prefix=$RDP_DEPS/jansson && make -j$CPU_NUM && make install && cd -;
+if [ $? -ne 0 ];then
+    exit 2
+fi
 
 #make & install glog
-cd $RDP_PROJ/3rd_party/;tar -xf glog-0.3.4.tar.gz;
-cd $RDP_PROJ/3rd_party/glog-0.3.4;./configure --prefix=$RDP_DEPS/glog && make -j$CPU_NUM && make install;cd -;
+cd $RDP_PROJ/3rd_party/ && tar -xf glog-0.3.4.tar.gz && \
+cd $RDP_PROJ/3rd_party/glog-0.3.4 && ./configure --prefix=$RDP_DEPS/glog && make -j$CPU_NUM && make install && cd -;
+if [ $? -ne 0 ];then
+    exit 2
+fi
 
 #make & install librdkafka
-cd $RDP_PROJ/3rd_party/;tar -xf librdkafka-0.9.5-add-thd-name.tar.gz;
-cd $RDP_PROJ/3rd_party/librdkafka-0.9.5-add-thd-name;./configure --prefix=$RDP_DEPS/librdkafka && make -j$CPU_NUM && make install;cd -;
+cd $RDP_PROJ/3rd_party/ && tar -xf librdkafka-0.9.5-add-thd-name.tar.gz && \
+cd $RDP_PROJ/3rd_party/librdkafka-0.9.5-add-thd-name && ./configure --prefix=$RDP_DEPS/librdkafka && make -j$CPU_NUM && make install && cd -;
+if [ $? -ne 0 ];then
+    exit 2
+fi
 
 #make & install zookeeper c lib
-cd $RDP_PROJ/3rd_party/;tar -xf zookeeper-3.4.10-add-thd-name-add-log.tar.gz
-cd $RDP_PROJ/3rd_party/zookeeper-3.4.10-add-thd-name-add-log/src/c;./configure --prefix=$RDP_DEPS/zklib && make -j$CPU_NUM && make install;cd -;
+cd $RDP_PROJ/3rd_party/ && tar -xf zookeeper-3.4.10-add-thd-name-add-log.tar.gz && \
+cd $RDP_PROJ/3rd_party/zookeeper-3.4.10-add-thd-name-add-log/src/c && ./configure --prefix=$RDP_DEPS/zklib && make -j$CPU_NUM && make install && cd -;
+if [ $? -ne 0 ];then
+    exit 2
+fi
 
 #make & install protobuf
-cd $RDP_PROJ/3rd_party/;tar -xf protobuf-cpp-3.1.0.tar.gz;
-cd $RDP_PROJ/3rd_party/protobuf-3.1.0/;./configure --prefix=$RDP_DEPS/protobuf && make -j$CPU_NUM && make install;cd -;
+cd $RDP_PROJ/3rd_party/ && tar -xf protobuf-cpp-3.1.0.tar.gz && \
+cd $RDP_PROJ/3rd_party/protobuf-3.1.0/ && ./configure --prefix=$RDP_DEPS/protobuf && make -j$CPU_NUM && make install && cd -;
+if [ $? -ne 0 ];then
+    exit 2
+fi
 
 #make & install gflags
-cd $RDP_PROJ/3rd_party/;tar -xf gflags-2.2.0.tar.gz;
-cd $RDP_PROJ/3rd_party/gflags-2.2.0/;cmake . -DCMAKE_INSTALL_PREFIX=$RDP_DEPS/gflags -DBUILD_SHARED_LIBS=ON && make -j$CPU_NUM && make install;cd -;
+cd $RDP_PROJ/3rd_party/ && tar -xf gflags-2.2.0.tar.gz && \
+cd $RDP_PROJ/3rd_party/gflags-2.2.0/ && cmake . -DINTTYPES_FORMAT=C99 -DCMAKE_INSTALL_PREFIX=$RDP_DEPS/gflags -DBUILD_SHARED_LIBS=ON && make -j$CPU_NUM && make install && cd -;
+if [ $? -ne 0 ];then
+    exit 2
+fi
 
 #make & install gtest
-cd $RDP_PROJ/3rd_party/;tar -xf googletest-release-1.8.0.tar.gz;
-cd $RDP_PROJ/3rd_party/googletest-release-1.8.0/;cmake . -DCMAKE_INSTALL_PREFIX=$RDP_DEPS/gtest && make -j$CPU_NUM && make install;cd -;
+cd $RDP_PROJ/3rd_party/ && tar -xf googletest-release-1.8.0.tar.gz && \
+cd $RDP_PROJ/3rd_party/googletest-release-1.8.0/ && cmake . -DCMAKE_INSTALL_PREFIX=$RDP_DEPS/gtest && make -j$CPU_NUM && make install && cd -;
+if [ $? -ne 0 ];then
+    exit 2
+fi
 
 #make & install lz4
-cd $RDP_PROJ/3rd_party/;tar -zxf lz4-1.8.1.2.tar.gz;
-cd $RDP_PROJ/3rd_party/lz4-1.8.1.2/;make -j$CPU_NUM -e LDFLAGS=-lrt && make install PREFIX=$RDP_DEPS/lz4;cd -;
+cd $RDP_PROJ/3rd_party/ && tar -zxf lz4-1.8.1.2.tar.gz && \
+cd $RDP_PROJ/3rd_party/lz4-1.8.1.2/ && make -j$CPU_NUM -e LDFLAGS=-lrt && make install PREFIX=$RDP_DEPS/lz4 && cd -;
+if [ $? -ne 0 ];then
+    exit 2
+fi
 
 #install intel tbb
 cd $RDP_PROJ/3rd_party/;tar -xf tbb2018_20170726oss_lin.tgz;
@@ -133,13 +171,13 @@ then
 fi
 
 cd $RDP_PROJ/syncer/client/message && make && make install && cd - && \
-cd $RDP_PROJ/tools/save_file_into_mysql/ && make clean && make MYSQL_DIR=$MYSQL_DIR &&  cd - && \
 cd $RDP_PROJ/3rd_party/$MYSQL_DIR && rm -r client && ln -s $RDP_PROJ/syncer/client client && \
 cd $RDP_PROJ/3rd_party/$MYSQL_DIR/client && ln -sf $RDP_DEPS deps && \
 cd $RDP_PROJ/3rd_party/$MYSQL_DIR/bld && cmake .. -DSTAT_TIME=0 -DNO_KAFKA=0 -DCMAKE_BUILD_TYPE=Debug -DRDP_GIT_HASH=`git show | grep "commit" | head -1 | cut -d ' ' -f2` -DENABLE_DOWNLOADS=1 -DWITH_BOOST=$RDP_PROJ/3rd_party/boost_1_59_0/ && \
 cd $RDP_PROJ/3rd_party/$MYSQL_DIR/bld/libmysql && make && cd - && \
 cd $RDP_PROJ/3rd_party/$MYSQL_DIR/bld/client && make -j$CPU_NUM mysqldump && cd - && \
-cd $RDP_PROJ/3rd_party/$MYSQL_DIR/bld/client && make -j$CPU_NUM rdp_syncer && cd - ;
+cd $RDP_PROJ/3rd_party/$MYSQL_DIR/bld/client && make -j$CPU_NUM rdp_syncer && cd - && \
+cd $RDP_PROJ/tools/save_file_into_mysql/ && make clean && make MYSQL_DIR=$MYSQL_DIR &&  cd -;
 
 ;;
 
@@ -154,13 +192,13 @@ then
 fi
 
 cd $RDP_PROJ/syncer/client/message && make && make install && cd - && \
-cd $RDP_PROJ/tools/save_file_into_mysql/ && make clean && make MYSQL_DIR=$MYSQL_DIR &&  cd - && \
 cd $RDP_PROJ/3rd_party/$MYSQL_DIR && rm -r client && ln -s $RDP_PROJ/syncer/client client && \
 cd $RDP_PROJ/3rd_party/$MYSQL_DIR/client && ln -sf $RDP_DEPS deps && \
 cd $RDP_PROJ/3rd_party/$MYSQL_DIR/bld && cmake .. -DCMAKE_BUILD_TYPE=Release -DRDP_GIT_HASH=`git show | grep "commit" | head -1 | cut -d ' ' -f2` -DENABLE_DOWNLOADS=1 -DWITH_BOOST=$RDP_PROJ/3rd_party/boost_1_59_0/ && \
 cd $RDP_PROJ/3rd_party/$MYSQL_DIR/bld/libmysql && make && cd - && \
 cd $RDP_PROJ/3rd_party/$MYSQL_DIR/bld/client && make -j$CPU_NUM mysqldump && cd - && \
-cd $RDP_PROJ/3rd_party/$MYSQL_DIR/bld/client && make -j$CPU_NUM rdp_syncer && cd -;
+cd $RDP_PROJ/3rd_party/$MYSQL_DIR/bld/client && make -j$CPU_NUM rdp_syncer && cd - && \
+cd $RDP_PROJ/tools/save_file_into_mysql/ && make clean && make MYSQL_DIR=$MYSQL_DIR &&  cd -;
 
 ;;
 
@@ -175,13 +213,13 @@ cd $RDP_PROJ/3rd_party/;tar -xf $MYSQL_PKG; mkdir $RDP_PROJ/3rd_party/$MYSQL_DIR
 fi
 
 cd $RDP_PROJ/syncer/client/message && make && make install && cd - && \
-cd $RDP_PROJ/tools/save_file_into_mysql/ && make clean && make MYSQL_DIR=$MYSQL_DIR &&  cd - && \
 cd $RDP_PROJ/3rd_party/$MYSQL_DIR && rm -r client && ln -s $RDP_PROJ/syncer/client client && \
 cd $RDP_PROJ/3rd_party/$MYSQL_DIR/client && ln -sf $RDP_DEPS deps && \
 cd $RDP_PROJ/3rd_party/$MYSQL_DIR/bld && cmake .. -DFIU=1 -DCMAKE_BUILD_TYPE=Debug -DRDP_GIT_HASH=`git show | grep "commit" | head -1 | cut -d ' ' -f2` -DENABLE_DOWNLOADS=1 -DWITH_BOOST=$RDP_PROJ/3rd_party/boost_1_59_0/ && \
 cd $RDP_PROJ/3rd_party/$MYSQL_DIR/bld/libmysql && make && cd - && \
 cd $RDP_PROJ/3rd_party/$MYSQL_DIR/bld/client && make -j$CPU_NUM mysqldump && cd - && \
-cd $RDP_PROJ/3rd_party/$MYSQL_DIR/bld/client && make -j$CPU_NUM rdp_syncer && cd -;
+cd $RDP_PROJ/3rd_party/$MYSQL_DIR/bld/client && make -j$CPU_NUM rdp_syncer && cd - && \
+cd $RDP_PROJ/tools/save_file_into_mysql/ && make clean && make MYSQL_DIR=$MYSQL_DIR &&  cd -;
 
 ;;
 
