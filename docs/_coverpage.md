@@ -1,7 +1,7 @@
 ![logo](rdp-logo.png)
 
 
-> 唯品会分布式实时数据管道系统
+> 唯品会分布式数据管道系统
 
 - High availability
 - High performance
