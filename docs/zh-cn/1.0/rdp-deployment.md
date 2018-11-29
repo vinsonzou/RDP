@@ -107,35 +107,6 @@ vim /apps/svr/rdp_syncer/data/10001/conf/syncer.cfg
 | compress.enable                 | 是否启用压缩                                       | 0                                                  |
 | metrics.file.dir                | metrics 目录                                       | /apps/svr/rdp_syncer/data/10001/metrics            |
 
-**创建Zookeeper目录**
-
-通过Zookeeper Client创建配置文件中node.list.path、leader.path 、filter.path 、checkpoint.path 对应的目录。
-
-```
-[zk: localhost:2181(CONNECTED) 1] create /rdp_syncer ''
-[zk: localhost:2181(CONNECTED) 1] create /rdp_syncer/10001 ''
-[zk: localhost:2181(CONNECTED) 1] create /rdp_syncer/10001/nodes ''
-[zk: localhost:2181(CONNECTED) 1] create /rdp_syncer/10001/leader ''
-[zk: localhost:2181(CONNECTED) 1] create /rdp_syncer/10001/filter ''
-[zk: localhost:2181(CONNECTED) 1] create /rdp_syncer/10001/filter/included ''
-[zk: localhost:2181(CONNECTED) 1] create /rdp_syncer/10001/checkpoint ''
-```
-
-**初始化Schema Store**
-
-```
-cd /apps/svr/rdp_syncer/base/rdp_mysql.20180822/scripts
-./init_schema_meta.sh --src-host=127.0.0.1 --src-port=3306 --src-user=rdp --src-passwd=test --dst-host=127.0.0.1  --dst-port=10001 --dst-user=rdp --dst-passwd=test --dst-database=vip_rdp_schema_meta_10001 --reset-dst
-#脚本执行结果
-{"errno":0,"error":"ok","gtid_binlog_pos":"6098d558-96ec-11e8-a2d7-fa163ef40021:1-41,\nb93fc470-a1fc-11e8-9b46-fa163e8d0f56:1-31156"}
-```
-
-**将gtid_binlog_pos写入Zookeeper Checkpoint目录**
-
-```
-[zk: localhost:2181(CONNECTED) 1] set /rdp_syncer/10001/checkpoint '{"flag":"1","seq_no":"0","gtid":"6098d558-96ec-11e8-a2d7-fa163ef40021:1-41,b93fc470-a1fc-11e8-9b46-fa163e8d0f56:1-31156"}' -1
-```
-
 **启停RDP**
 
 ```
