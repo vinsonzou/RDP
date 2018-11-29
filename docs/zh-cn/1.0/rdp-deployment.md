@@ -5,53 +5,14 @@
 下载源码：
 
 ```
-git clone git@gitlab.tools.vipshop.com:ds-rdp/syncer-basic.git ./syncer-basic
-cd ./syncer-basic
-```
-
-RDP For MySQL With GTID源码：
-
-```
-git checkout master
-git pull
-```
-
-RDP For MySQL Without GTID源码：
-
-```
-git checkout rdp_for_5.7_without_gtid
-git pull
-```
-
-RDP For MariaDB 10.0.27源码：
-
-```
-git checkout rdp_for_mariadb
-git pull
-```
-
-RDP For MariaDB 10.1.20源码：
-
-```
-git checkout rdp_for_mariadb_10_1_20
-git pull
-```
-
-RDP For Slave View源码：
-
-```
-git checkout slave_view_dev
-git pull
+git clone **********.git ./rdp
+cd ./rdp
 ```
 
 编译源码：
 
 ```
-cd ./build
-./build.sh prepare
-./build.sh 3rd_party
-./build.sh syncer
-./build.sh syncer_install
+make
 # 可执行文件包在package目录下
 ls package/
 rdp_mysql.20180822.tgz  syncer
@@ -185,63 +146,5 @@ cd /apps/svr/rdp_syncer/base/rdp_mysql.20180822/bin
 ./install.sh 10001
 #停止RDP并删除crontab
 ./uninstall.sh 10001
-```
-
-## 2. Filebeat监控上报部署
-
-RDP将进程状态、处理清空等监控信息以json格式写到metrics.file.dir目录中，通过Filebeat上报至InfluxDB中，通过Grafana展示。以下为Filebeat的部署流程，不描述InfluxDB和Grafana部署流程。
-
-**下载源码**
-
-```
-#进入go src目录
-mkdir gitlab.tools.vipshop.com
-git clone git@gitlab.tools.vipshop.com:ds-vdl/beats.git
-cd beats
-git pull
-```
-
-**编译**
-
-```
-cd filebeat
-go build
-#生成可执行文件filebeat
-```
-
-**创建目录**
-
-```
-mkdir -p /apps/svr/rdp_filebeat
-mkdir -p /apps/svr/rdp_filebeat/data
-mkdir -p /apps/svr/rdp_filebeat/logs
-```
-
-**上传可执行文件**
-
-```
-上传编译生成可执行文件filebeat和源码目录下配置文件filebeat.yml至/apps/svr/rdp_filebeat
-```
-
-**修改配置文件**
-
-```
-vim filebeat.yml
-#修改监控目录
- paths:
-    - /apps/svr/rdp_syncer/data/*/metrics/rdp_syncer.metrics
-#修改InfluxDB信息
-output.influxdb:
-  enabled: true
-  addr: 'http://***.***.***.***:8086'
-  username: '***'
-  password: '***'
-  db: '***'
-```
-
-**启动Filebeat**
-
-```
-./filebeat -C filebeat.yml
 ```
 
