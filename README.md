@@ -25,10 +25,10 @@ RDP的全称是Real-Time Data Pipeline，是一个从MySQL同步数据到Kafka�
 
 ## Contributors
 
-* [范力彪](https://github.com/libiaofan)
 * [汤锦平](https://github.com/tom-tangjp)
 * [赵百忠](https://github.com/firnsan)
 * [陈非](https://github.com/flike)
+* [范力彪](https://github.com/libiaofan)
 * 简怀兵
 * 陈世旺
 
