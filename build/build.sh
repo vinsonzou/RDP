@@ -9,10 +9,13 @@ RDP_DEPS=$RDP_PROJ/deps
 
 CPU_NUM=`grep processor /proc/cpuinfo | wc -l`                                  
 CPU_NUM=`expr $CPU_NUM - 1`
+if [ $CPU_NUM -eq 0 ]; then
+  CPU_NUM=1
+fi
 
 if [ "x$1" == "x" ]
 then
-echo "USAGE: $0 prepare|3rd_party|comm|syncer_debug|syncer_with_fiu|syncer|syncer_install|topic_translate|fulltopic_check|zk|generate_package|save_file_into_mysql"
+echo "USAGE: $0 prepare|3rd_party|comm|syncer_debug|syncer_with_fiu|syncer|syncer_install|topic_translate|fulltopic_check|zk|generate_package"
 exit 2
 fi
 
@@ -67,7 +70,7 @@ prepare)
 source /etc/os-release
 case $ID in
 debian|ubuntu|devuan)
-    apt-get install -y gcc gcc-c++ make cmake && \
+    apt-get install -y gcc g++ make cmake && \
     apt-get install -y libcurl4-openssl-dev && \
     apt-get install -y libncurses5-dev bison && \
     apt-get install -y python && \
